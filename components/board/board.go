@@ -18,6 +18,7 @@ type Model struct {
         game      int8
         answerKey int8
         given     bool
+        pencils map[int8]bool
     }
     keyMap inputs.KeyMap // contains all inputs - uses bubbles/key to do fancy things for us
     currCell coordinate // current cell player is on
@@ -29,6 +30,22 @@ type Model struct {
 type coordinate struct {
     row, col int
 }
+
+// Using shift+[1-9] for penciling, thus we need to map
+// these characters to the proper number
+var pencilMap = map[string]int8{
+    "!": 1,
+    "@": 2,
+    "#": 3,
+    "$": 4,
+    "%": 5,
+    "^": 6,
+    "&": 7,
+    "*": 8,
+    "(": 9,
+}
+
+
 
 // Initializes board model
 func NewModel(mode int) Model {
@@ -53,6 +70,7 @@ func NewModel(mode int) Model {
         game      int8
         answerKey int8
         given     bool
+        pencils map[int8]bool
     }
     cellsLeft := 0
     for i := 0; i < 9; i++ {
@@ -65,6 +83,7 @@ func NewModel(mode int) Model {
             } else {
                 cellsLeft++
             }
+            board[i][j].pencils = make(map[int8]bool)
         }
     }
 
@@ -100,6 +119,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case key.Matches(msg, inputs.Controls.Number):
             num,_ := strconv.Atoi(msg.String())
             m.setCell(int8(num), m.currCell)
+
+        case key.Matches(msg, inputs.Controls.PencilNumber):
+            num := pencilMap[msg.String()]
+            m.setPencilCell(int8(num), m.currCell)
 
         case key.Matches(msg, inputs.Controls.Delete):
             m.deleteCell(m.currCell)
@@ -216,6 +239,15 @@ func (m *Model) setCell(num int8, currCell coordinate) {
 
         m.board[currCell.row][currCell.col].game = num
         delete(m.wrongCells, coordinate{currCell.row, currCell.col})
+    }
+}
+
+// sets/removes pencil mark
+func (m *Model) setPencilCell(num int8, currCell coordinate) {
+    row := currCell.row
+    col := currCell.col
+    if !m.board[currCell.row][currCell.col].given {
+        m.board[row][col].pencils[num] = !m.board[row][col].pencils[num]
     }
 }
 
