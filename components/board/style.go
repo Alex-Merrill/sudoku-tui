@@ -17,6 +17,8 @@ const (
     WRONG_NOT_SELECTED_COLOR = lipgloss.Color("#D7263D")
     BOLD_BORDER_COLOR = lipgloss.Color("#F26419")
     NORMAL_BORDER_COLOR = lipgloss.Color("#ffffff") // can use this for borders between each cell, but eh
+    PENCIL_MARK_COLOR = lipgloss.Color("#F26419")
+    FINAL_VALUE_COLOR = lipgloss.Color("#ffffff")
 )
 
 // style definitions and ui rendering
@@ -44,22 +46,25 @@ var (
             for j := 0; j < 3; j++ {
                 // checks whether to render pencil marks or cell value
                 var valToRender string
+                var foregroundColor lipgloss.Color
                 if cell == " " { // cell not marked render, pencil marks
                     if pencils[int8(i*3 + j + 1)] {
                         valToRender = fmt.Sprintf("%d", i*3 + j + 1)
                     } else {
                         valToRender = " "
                     }
+                    foregroundColor = PENCIL_MARK_COLOR
                 } else { // cell marked, dont render pencil marks, only render cell val on middle cell
                     if i == 1 && j == 1 {
                         valToRender = cell
                     } else {
                         valToRender = " "
                     }
+                    foregroundColor = FINAL_VALUE_COLOR
                 }
                 
                 // creates cell string
-                style := lipgloss.NewStyle().Padding(0, 1, 0, 1)
+                style := lipgloss.NewStyle().Padding(0, 1, 0, 1).Foreground(foregroundColor)
                 if primaryColor {
                     currRow += style.Background(primaryGlossColor).Render(valToRender)
                 } else {
