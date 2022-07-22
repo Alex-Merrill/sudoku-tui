@@ -218,18 +218,82 @@ func (m *Model) setCell(num int8, currCell coordinate) {
     }
 }
 
+// need to get wrong cells and check for win seperately
+// sudoku generator can output puzzles with multiple solutions
+// its common for there to be x-wings at the end of the puzzle
+// where some/all configurations work.
 func (m *Model) checkWon() bool {
-    won := true
+    // get wrong cells
     cellsWrong := 0        
     for i := 0; i < len(m.board); i++ {
         for j := 0; j < len(m.board[0]); j++ {
             if m.board[i][j].game != m.board[i][j].answerKey {
-                won = false
                 m.wrongCells[coordinate{i,j}] = true
                 cellsWrong++
             }
         }
     }
+
+    // check for win
+    won := m.checkForWinManual()
+
     m.cellsLeft = cellsWrong
     return won
 }
+
+// We can be a bit clever here and use row,col,box 2D arrays
+// with type bool 
+// We can then check for correctness with one pass through the
+// board, as opposed to 3 (for every row, col, and box)
+// ex: if a 1 is placed at row 2 col 2, we will set
+// row[2][1] = true, col[2][1] = true, box[0][1] = true
+func (m *Model) checkForWinManual() bool {
+    // [9][10] because there are 9 cells in each row/col/box
+    // but we have numbers 1-9, so [c][0] will never be used
+    var row,col,box [9][10] bool
+
+     
+    for i := 0; i < len(m.board); i++ {
+        for j := 0; j < len(m.board[0]); j++ {
+            val := m.board[i][j].game
+            if val != -1 {
+                // row check
+                if row[i][val] { // we have a dupe
+                    return false
+                }
+                row[i][val] = true
+
+                // col check
+                if col[j][val] { // we have a dupe
+                    return false
+                }
+                col[j][val] = true
+                
+                // box check
+                /*
+                    convert i,j to boxRow/boxCol indices 
+                    ie: (0,0)│(0,1)│(0,2)
+                        ─────┼─────┼─────
+                        (1,0)│(1,1)│(1,2)
+                        ─────┼─────┼─────
+                        (2,0)│(2,1)│(2,2)
+                    then convert to flat index boxIndx [0-8]
+                */
+                bRow := i/3
+                bCol := j/3
+                boxIdx := bRow*3 + bCol
+                if box[boxIdx][val] { // we have a dupe
+                    return false
+                }
+                box[boxIdx][val] = true
+
+            } else { // i dont think we can ever get here, but better safe than sorry
+                return false
+            }
+        }
+    }
+
+    // if we've made it here, there were no dupes, thus win
+    return true
+}
+
