@@ -1,13 +1,15 @@
 package board
 
 import (
-	"github.com/Alex-Merrill/sudoku-tui/components/inputs"
 	"fmt"
 	"os"
 	"strconv"
 
+	"github.com/Alex-Merrill/sudoku-tui/components/inputs"
+
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	generator "github.com/forfuns/sudoku-go/generator"
 )
 
@@ -164,33 +166,40 @@ func (m Model) View() string {
 
     // iterates through board to add to draw string
     bLen := len(m.board)
-    board := err + "\n\n"
-    board += drawSideBorder("hor", "top") + "\n"
+    boardString := err + "\n\n"
+    //board += drawSideBorder("hor", "top") + "\n"
     for i := 0; i < bLen; i++ {
-        row := ""
+        rowString := ""
         for j := 0; j < bLen; j++ {
             _,err := m.wrongCells[coordinate{i,j}]
             isSelected := m.currCell.row == i && m.currCell.col == j
-           
+                       
             // add cell to row
-            row += drawCell(err, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game))
+            cell := drawCell(err, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game))
+            rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, cell)
             // if we are at column where box border goes, add border
-            if j == 2 || j == 5 {
-                row += drawBorder("vert")
-            }
+            //if j == 2 || j == 5 {
+            //    rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", true))
+            //} else if j < 8 {
+            //    rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", false))
+            //}
         } 
-    
+
         // add row to board
-        board += drawSideBorder("vert", "") + row + drawSideBorder("vert", "") + "\n"
-        
+        //boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, rowString) 
+        boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, rowString) 
+
+
         // if we are at a row where box border goes, add border
-        if i == 2 || i == 5 {
-            board += drawBorder("hor") + "\n"
-        }
+        //if i == 2 || i == 5 {
+        //    boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, drawBorder("hor", true)) 
+        //} else if i < 8 {
+        //    boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, drawBorder("hor", false))
+        //}
     } 
 
-
-    return board + drawSideBorder("hor", "bottom")
+    return boardString
+    //return boardString + drawSideBorder("hor", "bottom")
 }
 
 func (m *Model) cursorDown() {
