@@ -56,7 +56,19 @@ var (
         if dir == "vert" {
             return lipgloss.NewStyle().Padding(0, 1, 0, 1).Render("│")
         } else {
-            return lipgloss.NewStyle().Padding(0, 1, 0, 1).Render("──────────┼───────────┼──────────")
+            return lipgloss.NewStyle().Padding(0, 1, 0, 1).Render("├───────────┼───────────┼───────────┤")
+        }
+    }
+
+    drawSideBorder = func(dir string, loc string) string {
+        if dir == "vert" {
+            return lipgloss.NewStyle().Padding(0, 1, 0, 1).Render("│")
+        } else {
+            if loc == "top" {
+                return lipgloss.NewStyle().Padding(0, 1, 0, 1).Render("┌───────────┬───────────┬───────────┐")
+            } else {
+                return lipgloss.NewStyle().Padding(0, 1, 0, 1).Render("└───────────┴───────────┴───────────┘")
+            }
         }
     }
 )

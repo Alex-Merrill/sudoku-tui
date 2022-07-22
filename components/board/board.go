@@ -142,6 +142,7 @@ func (m Model) View() string {
     // iterates through board to add to draw string
     bLen := len(m.board)
     board := err + "\n\n"
+    board += drawSideBorder("hor", "top") + "\n"
     for i := 0; i < bLen; i++ {
         row := ""
         for j := 0; j < bLen; j++ {
@@ -157,7 +158,7 @@ func (m Model) View() string {
         } 
     
         // add row to board
-        board += row + "\n"
+        board += drawSideBorder("vert", "") + row + drawSideBorder("vert", "") + "\n"
         
         // if we are at a row where box border goes, add border
         if i == 2 || i == 5 {
@@ -166,7 +167,7 @@ func (m Model) View() string {
     } 
 
 
-    return board
+    return board + drawSideBorder("hor", "bottom")
 }
 
 func (m *Model) cursorDown() {

@@ -45,7 +45,7 @@ var Controls = KeyMap{
     ),
     Number: key.NewBinding(
         key.WithKeys("1", "2", "3", "4", "5", "6", "7", "8", "9"),
-        key.WithHelp("1-9", "enter number in cell"),
+        key.WithHelp("1-9", "input number"),
     ),
     Delete: key.NewBinding(
         key.WithKeys("backspace"),
