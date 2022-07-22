@@ -13,6 +13,7 @@ import (
 // Defines App Model
 // Consists of board component and menu component
 type Model struct {
+    mode int
     board board.Model
     menu menu.Model
 
@@ -30,7 +31,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         switch {
         case key.Matches(msg, inputs.Controls.Quit):
             return m, tea.Quit
-        }        
+        case key.Matches(msg, inputs.Controls.NewGame):
+            m.board = board.NewModel(m.mode)
+        }
 
     case tea.WindowSizeMsg:
         m.width = msg.Width
@@ -59,6 +62,7 @@ func (m Model) View() string {
 
 func NewModel(mode int) Model {
     return Model {
+        mode: mode,
         board: board.NewModel(mode),
         menu: menu.NewModel(),
     }
