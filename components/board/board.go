@@ -167,39 +167,31 @@ func (m Model) View() string {
     // iterates through board to add to draw string
     bLen := len(m.board)
     boardString := err + "\n\n"
-    //board += drawSideBorder("hor", "top") + "\n"
     for i := 0; i < bLen; i++ {
         rowString := ""
         for j := 0; j < bLen; j++ {
-            _,err := m.wrongCells[coordinate{i,j}]
+            _,cellWrong := m.wrongCells[coordinate{i,j}]
             isSelected := m.currCell.row == i && m.currCell.col == j
                        
             // add cell to row
-            cell := drawCell(err, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game))
+            cell := drawCell(cellWrong, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game), m.board[i][j].pencils)
             rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, cell)
             // if we are at column where box border goes, add border
-            //if j == 2 || j == 5 {
-            //    rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", true))
-            //} else if j < 8 {
-            //    rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", false))
-            //}
+            if j == 2 || j == 5 {
+                rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", ""))
+            }
         } 
 
         // add row to board
-        //boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, rowString) 
         boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, rowString) 
 
-
         // if we are at a row where box border goes, add border
-        //if i == 2 || i == 5 {
-        //    boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, drawBorder("hor", true)) 
-        //} else if i < 8 {
-        //    boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, drawBorder("hor", false))
-        //}
+        if i == 2 || i == 5 {
+            boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, drawBorder("hor", rowString)) 
+        }    
     } 
 
     return boardString
-    //return boardString + drawSideBorder("hor", "bottom")
 }
 
 func (m *Model) cursorDown() {

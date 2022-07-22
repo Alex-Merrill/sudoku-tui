@@ -50,11 +50,11 @@ var Controls = KeyMap{
     ),
     PencilNumber: key.NewBinding(
         key.WithKeys("!", "@", "#", "$", "%", "^", "&", "*", "("),
-        key.WithHelp("shift+[1-9]", "pencil mark number"),
+        key.WithHelp("shift+[1-9]", "pencil mark/unmark number"),
     ),
     Delete: key.NewBinding(
         key.WithKeys("backspace"),
-        key.WithHelp("backspace", "clear cell"),
+        key.WithHelp("backspace", "clear cell value"),
     ),
     Quit: key.NewBinding(
         key.WithKeys("ctrl+c", "q"),
