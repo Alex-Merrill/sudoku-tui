@@ -1,13 +1,15 @@
 package board
 
 import (
-	"github.com/Alex-Merrill/sudoku-tui/components/inputs"
 	"fmt"
 	"os"
 	"strconv"
 
+	"github.com/Alex-Merrill/sudoku-tui/components/inputs"
+
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	generator "github.com/forfuns/sudoku-go/generator"
 )
 
@@ -18,6 +20,7 @@ type Model struct {
         game      int8
         answerKey int8
         given     bool
+        pencils map[int8]bool
     }
     keyMap inputs.KeyMap // contains all inputs - uses bubbles/key to do fancy things for us
     currCell coordinate // current cell player is on
@@ -29,6 +32,22 @@ type Model struct {
 type coordinate struct {
     row, col int
 }
+
+// Using shift+[1-9] for penciling, thus we need to map
+// these characters to the proper number
+var pencilMap = map[string]int8{
+    "!": 1,
+    "@": 2,
+    "#": 3,
+    "$": 4,
+    "%": 5,
+    "^": 6,
+    "&": 7,
+    "*": 8,
+    "(": 9,
+}
+
+
 
 // Initializes board model
 func NewModel(mode int) Model {
@@ -53,6 +72,7 @@ func NewModel(mode int) Model {
         game      int8
         answerKey int8
         given     bool
+        pencils map[int8]bool
     }
     cellsLeft := 0
     for i := 0; i < 9; i++ {
@@ -65,6 +85,7 @@ func NewModel(mode int) Model {
             } else {
                 cellsLeft++
             }
+            board[i][j].pencils = make(map[int8]bool)
         }
     }
 
@@ -100,6 +121,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case key.Matches(msg, inputs.Controls.Number):
             num,_ := strconv.Atoi(msg.String())
             m.setCell(int8(num), m.currCell)
+
+        case key.Matches(msg, inputs.Controls.PencilNumber):
+            num := pencilMap[msg.String()]
+            m.setPencilCell(int8(num), m.currCell)
 
         case key.Matches(msg, inputs.Controls.Delete):
             m.deleteCell(m.currCell)
@@ -141,33 +166,32 @@ func (m Model) View() string {
 
     // iterates through board to add to draw string
     bLen := len(m.board)
-    board := err + "\n\n"
-    board += drawSideBorder("hor", "top") + "\n"
+    boardString := err + "\n\n"
     for i := 0; i < bLen; i++ {
-        row := ""
+        rowString := ""
         for j := 0; j < bLen; j++ {
-            _,err := m.wrongCells[coordinate{i,j}]
+            _,cellWrong := m.wrongCells[coordinate{i,j}]
             isSelected := m.currCell.row == i && m.currCell.col == j
-           
+                       
             // add cell to row
-            row += drawCell(err, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game))
+            cell := drawCell(cellWrong, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game), m.board[i][j].pencils)
+            rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, cell)
             // if we are at column where box border goes, add border
             if j == 2 || j == 5 {
-                row += drawBorder("vert")
+                rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", ""))
             }
         } 
-    
+
         // add row to board
-        board += drawSideBorder("vert", "") + row + drawSideBorder("vert", "") + "\n"
-        
+        boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, rowString) 
+
         // if we are at a row where box border goes, add border
         if i == 2 || i == 5 {
-            board += drawBorder("hor") + "\n"
-        }
+            boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, drawBorder("hor", rowString)) 
+        }    
     } 
 
-
-    return board + drawSideBorder("hor", "bottom")
+    return boardString
 }
 
 func (m *Model) cursorDown() {
@@ -216,6 +240,15 @@ func (m *Model) setCell(num int8, currCell coordinate) {
 
         m.board[currCell.row][currCell.col].game = num
         delete(m.wrongCells, coordinate{currCell.row, currCell.col})
+    }
+}
+
+// sets/removes pencil mark
+func (m *Model) setPencilCell(num int8, currCell coordinate) {
+    row := currCell.row
+    col := currCell.col
+    if !m.board[currCell.row][currCell.col].given {
+        m.board[row][col].pencils[num] = !m.board[row][col].pencils[num]
     }
 }
 

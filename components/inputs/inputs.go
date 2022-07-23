@@ -8,6 +8,7 @@ type KeyMap struct {
     Left key.Binding
     Right key.Binding
     Number key.Binding
+    PencilNumber key.Binding
     Delete key.Binding
     Quit key.Binding
     Help key.Binding
@@ -21,7 +22,7 @@ func (k KeyMap) ShortHelp() []key.Binding {
 func (k KeyMap) FullHelp() [][]key.Binding {
     return [][]key.Binding{
         {k.Up, k.Down, k.Left, k.Right}, // first column
-        {k.Number, k.Delete}, // second column
+        {k.Number, k.PencilNumber, k.Delete}, // second column
         {k.Help, k.Quit, k.NewGame}, // fourth column
     }
 }
@@ -47,9 +48,13 @@ var Controls = KeyMap{
         key.WithKeys("1", "2", "3", "4", "5", "6", "7", "8", "9"),
         key.WithHelp("1-9", "input number"),
     ),
+    PencilNumber: key.NewBinding(
+        key.WithKeys("!", "@", "#", "$", "%", "^", "&", "*", "("),
+        key.WithHelp("shift+[1-9]", "pencil mark/unmark number"),
+    ),
     Delete: key.NewBinding(
         key.WithKeys("backspace"),
-        key.WithHelp("backspace", "clear cell"),
+        key.WithHelp("backspace", "clear cell value"),
     ),
     Quit: key.NewBinding(
         key.WithKeys("ctrl+c", "q"),
