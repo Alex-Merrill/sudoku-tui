@@ -197,24 +197,32 @@ func (m Model) View() string {
 func (m *Model) cursorDown() {
     if m.currCell.row < len(m.board) - 1  {
         m.currCell.row++ 
+    } else {
+        m.currCell.row = 0
     }
 }
 
 func (m *Model) cursorUp() {
     if m.currCell.row > 0 {
         m.currCell.row--
+    } else {
+        m.currCell.row = len(m.board) - 1
     }
 }
 
 func (m *Model) cursorLeft() {
     if m.currCell.col > 0 {
         m.currCell.col--
+    } else {
+        m.currCell.col = len(m.board[0]) - 1
     }
 }
 
 func (m *Model) cursorRight() {
     if m.currCell.col < len(m.board[0]) - 1 {
         m.currCell.col++
+    } else {
+        m.currCell.col = 0
     }
 }
 
