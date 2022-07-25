@@ -248,27 +248,16 @@ func (m *Model) deleteCell() {
     }
 }
 
-// sets/removes pencil mark at all selected cells
+// sets/removes pencil mark at all selected cells if cell is not given or value is not set
 func (m *Model) setPencilCell(num int8) {
     for k := range m.selectedCells {
         row := k.row
         col := k.col
-        if !m.board[row][col].given {
+        given := m.board[row][col].given
+        set := m.board[row][col].game != -1
+        if !given && !set {
             m.board[row][col].pencils[num] = !m.board[row][col].pencils[num]
         }
-    }
-}
-
-// takes a number 1-9 and a coordinate
-// if there is a pencil mark of number "num" at coordiante currCell,
-// removes pencil mark
-func (m *Model) removePencilCell(num int8, currCell coordinate) {
-    row := currCell.row
-    col := currCell.col
-    given := m.board[row][col].given
-    pencilsContainsNum := m.board[row][col].pencils[num]
-    if !given && pencilsContainsNum {
-        m.board[row][col].pencils[num] = false
     }
 }
 
@@ -300,6 +289,20 @@ func (m *Model) updatePencilCells(num int8, currCell coordinate) {
             coord := coordinate{i, j}
             m.removePencilCell(num, coord)
         }
+    }
+}
+
+// takes a number 1-9 and a coordinate
+// if there is a pencil mark of number "num" at coordiante currCell
+// and the cell is not given and a value is not set, removes pencil mark
+func (m *Model) removePencilCell(num int8, currCell coordinate) {
+    row := currCell.row
+    col := currCell.col
+    given := m.board[row][col].given
+    pencilsContainsNum := m.board[row][col].pencils[num]
+    set := m.board[row][col].game != -1
+    if !given && !set && pencilsContainsNum {
+        m.board[row][col].pencils[num] = false
     }
 }
 
