@@ -24,6 +24,7 @@ type Model struct {
     }
     keyMap inputs.KeyMap // contains all inputs - uses bubbles/key to do fancy things for us
     currCell coordinate // current cell player is on
+    selectedCells map[coordinate]bool // keeps track of all selected cells
     wrongCells map[coordinate]bool // cells which contain the wrong number, shown upon puzzle completion
     gameWon bool // are ya winnin' son?
     cellsLeft int // keep track of this so we know when to display error highlighting
@@ -89,10 +90,15 @@ func NewModel(mode int) Model {
         }
     }
 
+    startCell := coordinate{0, 0}
+    selectedCells := make(map[coordinate]bool)
+    selectedCells[startCell] = true
+
     return Model {
         board: board,
         keyMap: inputs.Controls,
-        currCell: coordinate{0, 0},
+        currCell: startCell,
+        selectedCells: selectedCells,
         wrongCells: make(map[coordinate]bool),
         gameWon: false,
         cellsLeft: cellsLeft,
@@ -103,6 +109,9 @@ func (m Model) Init() tea.Cmd {
     return nil
 }
 
+// TODO: add new keybindings in inputs.go for highlighting multiple cells
+// as well as add new cases here for those keybindings, pointing to new cursorHighlight[Dir] funcs
+// also look through changes and see if this is all that is needed for this change
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
@@ -170,6 +179,7 @@ func (m Model) View() string {
     for i := 0; i < bLen; i++ {
         rowString := ""
         for j := 0; j < bLen; j++ {
+            // TODO: make isSelected check if curr coordinate is in m.selectedCells
             _,cellWrong := m.wrongCells[coordinate{i,j}]
             isSelected := m.currCell.row == i && m.currCell.col == j
                        
@@ -194,6 +204,8 @@ func (m Model) View() string {
     return boardString
 }
 
+// TODO: for all cursor funcs, clear selectedCells and add updated currCell to it
+// TODO: also create new cursorHighlight[Dir] funcs which change currCell, and add updated currCell to selectedCells
 func (m *Model) cursorDown() {
     if m.currCell.row < len(m.board) - 1  {
         m.currCell.row++ 
@@ -226,6 +238,7 @@ func (m *Model) cursorRight() {
     }
 }
 
+// TODO: make deleteCell, setCell, and setPencilCell funcs do event to all selectedCells instead of currCell
 // clears cell at board[currCell.row, currCell.col].game
 func (m *Model) deleteCell(currCell coordinate) {
     given := m.board[currCell.row][currCell.col].given
