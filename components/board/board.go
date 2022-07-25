@@ -261,6 +261,7 @@ func (m *Model) setCell(num int8, currCell coordinate) {
 
         m.board[currCell.row][currCell.col].game = num
         delete(m.wrongCells, coordinate{currCell.row, currCell.col})
+        m.updatePencilCells(num, currCell)
     }
 }
 
@@ -270,6 +271,49 @@ func (m *Model) setPencilCell(num int8, currCell coordinate) {
     col := currCell.col
     if !m.board[currCell.row][currCell.col].given {
         m.board[row][col].pencils[num] = !m.board[row][col].pencils[num]
+    }
+}
+
+// takes a number 1-9 and a coordinate
+// if there is a pencil mark of number "num" at coordiante currCell,
+// removes pencil mark
+func (m *Model) removePencilCell(num int8, currCell coordinate) {
+    row := currCell.row
+    col := currCell.col
+    given := m.board[row][col].given
+    pencilsContainsNum := m.board[row][col].pencils[num]
+    if !given && pencilsContainsNum {
+        m.board[row][col].pencils[num] = false
+    }
+}
+
+func (m *Model) updatePencilCells(num int8, currCell coordinate) {
+    row := currCell.row
+    col := currCell.col
+    // row
+    for i := 0; i < 9; i++ {
+        coord := coordinate{row, i}
+        m.removePencilCell(num, coord)
+    } 
+
+    // col
+    for i := 0; i < 9; i++ {
+        coord := coordinate{i, col}
+        m.removePencilCell(num, coord)
+    } 
+
+    // box
+    // convert (row,col) to the box index (0,0 0,1 0,2 for top three boxes etc)
+    // then convert those coordinates to the actual coords of the top left cell in box
+    bRow := row/3
+    bCol := col/3
+    realRow := bRow * 3
+    realCol := bCol * 3
+    for i := realRow; i < realRow + 3; i++ {
+        for j := realCol; j < realCol + 3; j++ {
+            coord := coordinate{i, j}
+            m.removePencilCell(num, coord)
+        }
     }
 }
 
