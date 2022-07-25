@@ -109,15 +109,13 @@ func (m Model) Init() tea.Cmd {
     return nil
 }
 
-// TODO: add new keybindings in inputs.go for highlighting multiple cells
-// as well as add new cases here for those keybindings, pointing to new cursorHighlight[Dir] funcs
-// also look through changes and see if this is all that is needed for this change
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
         switch {
         case key.Matches(msg, inputs.Controls.Down):
             m.cursorDown()
+
         case key.Matches(msg, inputs.Controls.Up):
             m.cursorUp()
 
@@ -127,16 +125,28 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case key.Matches(msg, inputs.Controls.Right):
             m.cursorRight()
 
+        case key.Matches(msg, inputs.Controls.CtrlDown):
+            m.cursorHighlightDown()
+
+        case key.Matches(msg, inputs.Controls.CtrlUp):
+            m.cursorHighlightUp()
+
+        case key.Matches(msg, inputs.Controls.CtrlLeft):
+            m.cursorHighlightLeft()
+
+        case key.Matches(msg, inputs.Controls.CtrlRight):
+            m.cursorHighlightRight()
+
         case key.Matches(msg, inputs.Controls.Number):
             num,_ := strconv.Atoi(msg.String())
-            m.setCell(int8(num), m.currCell)
+            m.setCell(int8(num))
 
         case key.Matches(msg, inputs.Controls.PencilNumber):
             num := pencilMap[msg.String()]
-            m.setPencilCell(int8(num), m.currCell)
+            m.setPencilCell(int8(num))
 
         case key.Matches(msg, inputs.Controls.Delete):
-            m.deleteCell(m.currCell)
+            m.deleteCell()
         }
     }
 
@@ -179,11 +189,11 @@ func (m Model) View() string {
     for i := 0; i < bLen; i++ {
         rowString := ""
         for j := 0; j < bLen; j++ {
-            // TODO: make isSelected check if curr coordinate is in m.selectedCells
             _,cellWrong := m.wrongCells[coordinate{i,j}]
-            isSelected := m.currCell.row == i && m.currCell.col == j
-                       
+            _,isSelected := m.selectedCells[coordinate{i,j}]
+            
             // add cell to row
+            // TODO: also send in currCell bool to make it different from a generic selectedCell
             cell := drawCell(cellWrong, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game), m.board[i][j].pencils)
             rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, cell)
             // if we are at column where box border goes, add border
@@ -204,73 +214,48 @@ func (m Model) View() string {
     return boardString
 }
 
-// TODO: for all cursor funcs, clear selectedCells and add updated currCell to it
-// TODO: also create new cursorHighlight[Dir] funcs which change currCell, and add updated currCell to selectedCells
-func (m *Model) cursorDown() {
-    if m.currCell.row < len(m.board) - 1  {
-        m.currCell.row++ 
-    } else {
-        m.currCell.row = 0
+// sets cell at all selected cells
+func (m *Model) setCell(num int8) {
+    for k := range m.selectedCells {
+        row := k.row
+        col := k.col
+        if !m.board[row][col].given {
+            // if marking an empty cell or a wrong cell, decrement cellsLeft
+            cellEmpty := m.board[row][col].game == -1
+            _,cellWrong := m.wrongCells[coordinate{row, col}]
+            if cellEmpty || cellWrong {
+                m.cellsLeft--
+            } 
+
+            m.board[row][col].game = num
+            delete(m.wrongCells, coordinate{row, col})
+            m.updatePencilCells(num, coordinate{row, col})
+        }
     }
 }
 
-func (m *Model) cursorUp() {
-    if m.currCell.row > 0 {
-        m.currCell.row--
-    } else {
-        m.currCell.row = len(m.board) - 1
+// clears all selected cells
+func (m *Model) deleteCell() {
+    for k := range m.selectedCells {
+        row := k.row
+        col := k.col
+        given := m.board[row][col].given
+        if !given && m.board[row][col].game != -1 {
+            m.board[row][col].game = -1
+            delete(m.wrongCells, coordinate{row, col})
+            m.cellsLeft++
+        }
     }
 }
 
-func (m *Model) cursorLeft() {
-    if m.currCell.col > 0 {
-        m.currCell.col--
-    } else {
-        m.currCell.col = len(m.board[0]) - 1
-    }
-}
-
-func (m *Model) cursorRight() {
-    if m.currCell.col < len(m.board[0]) - 1 {
-        m.currCell.col++
-    } else {
-        m.currCell.col = 0
-    }
-}
-
-// TODO: make deleteCell, setCell, and setPencilCell funcs do event to all selectedCells instead of currCell
-// clears cell at board[currCell.row, currCell.col].game
-func (m *Model) deleteCell(currCell coordinate) {
-    given := m.board[currCell.row][currCell.col].given
-    if !given && m.board[currCell.row][currCell.col].game != -1 {
-        m.board[currCell.row][currCell.col].game = -1
-        delete(m.wrongCells, coordinate{currCell.row, currCell.col})
-        m.cellsLeft++
-    }
-}
-
-// sets cell at board[currCell.row][currCell.col].game
-func (m *Model) setCell(num int8, currCell coordinate) {
-    if !m.board[currCell.row][currCell.col].given {
-        // if marking an empty cell or a wrong cell, decrement cellsLeft
-        cellEmpty := m.board[currCell.row][currCell.col].game == -1
-        _,cellWrong := m.wrongCells[coordinate{currCell.row, currCell.col}]
-        if cellEmpty || cellWrong {
-            m.cellsLeft--
-        } 
-
-        m.board[currCell.row][currCell.col].game = num
-        delete(m.wrongCells, coordinate{currCell.row, currCell.col})
-        m.updatePencilCells(num, currCell)
-    }
-}
-
-// sets/removes pencil mark
-func (m *Model) setPencilCell(num int8, currCell coordinate) {
-    row := currCell.row
-    col := currCell.col
-    if !m.board[currCell.row][currCell.col].given {
-        m.board[row][col].pencils[num] = !m.board[row][col].pencils[num]
+// sets/removes pencil mark at all selected cells
+func (m *Model) setPencilCell(num int8) {
+    for k := range m.selectedCells {
+        row := k.row
+        col := k.col
+        if !m.board[row][col].given {
+            m.board[row][col].pencils[num] = !m.board[row][col].pencils[num]
+        }
     }
 }
 
@@ -287,6 +272,7 @@ func (m *Model) removePencilCell(num int8, currCell coordinate) {
     }
 }
 
+// updates pencil cells in given row/box/col based on new "num" in cell currCell
 func (m *Model) updatePencilCells(num int8, currCell coordinate) {
     row := currCell.row
     col := currCell.col
@@ -395,4 +381,3 @@ func (m *Model) checkForWinManual() bool {
     // if we've made it here, there were no dupes, thus win
     return true
 }
-

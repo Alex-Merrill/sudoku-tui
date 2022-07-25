@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-
+// TODO: MAKE SELECTION COLOR DIFFERENT FROM CURRCELL COLOR
 const (
     BASE_GIVEN_COLOR = lipgloss.Color("#02182B")
     BASE_NOT_GIVEN_COLOR = lipgloss.Color("#68C5DB")
