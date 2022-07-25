@@ -191,16 +191,16 @@ func (m Model) View() string {
         for j := 0; j < bLen; j++ {
             _,cellWrong := m.wrongCells[coordinate{i,j}]
             _,isSelected := m.selectedCells[coordinate{i,j}]
-            
+            isCurrCell := m.currCell.row == i && m.currCell.col == j
+
             // add cell to row
-            // TODO: also send in currCell bool to make it different from a generic selectedCell
-            cell := drawCell(cellWrong, isSelected, m.board[i][j].given, convertToString(m.board[i][j].game), m.board[i][j].pencils)
+            cell := drawCell(cellWrong, isSelected, isCurrCell, m.board[i][j].given, convertToString(m.board[i][j].game), m.board[i][j].pencils)
             rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, cell)
             // if we are at column where box border goes, add border
             if j == 2 || j == 5 {
                 rowString = lipgloss.JoinHorizontal(lipgloss.Center, rowString, drawBorder("vert", ""))
             }
-        } 
+        }
 
         // add row to board
         boardString = lipgloss.JoinVertical(lipgloss.Center, boardString, rowString) 
