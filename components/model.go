@@ -55,7 +55,7 @@ func (m Model) View() string {
   
     // make composite view of app
     // board view on top, menu view on bottom
-    compositeView := lipgloss.JoinVertical(lipgloss.Center, m.board.View(), m.menu.View())
+    compositeView := lipgloss.JoinVertical(lipgloss.Center, m.board.View(), "\n", m.menu.View())
 
     return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, compositeView)
 }

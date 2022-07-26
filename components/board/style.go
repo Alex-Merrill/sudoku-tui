@@ -9,16 +9,13 @@ import (
 
 const (
     GIVEN_BASE_COLOR = lipgloss.Color("#042B4E")
-    GIVEN_SELECTED_COLOR = lipgloss.Color("#0164A2")
-    GIVEN_CURRENT_CELL_COLOR = lipgloss.Color("#318DCA")
-    NOT_GIVEN_BASE_COLOR = lipgloss.Color("#68C5DB")
-    NOT_GIVEN_SELECTED_COLOR = lipgloss.Color("#0197F6")
-    NOT_GIVEN_CURRENT_CELL_COLOR = lipgloss.Color("#1677AD")
+    NOT_GIVEN_BASE_COLOR = lipgloss.Color("#318DCA")
     WRONG_BASE_COLOR = lipgloss.Color("#D7263D")
-    WRONG_SELECTED_COLOR = lipgloss.Color("#E77484")
-    WRONG_CURRENT_CELL_COLOR = lipgloss.Color("#E15164")
+    SELECTED_COLOR = lipgloss.Color("#3AB4CF")
+    CURRENT_COLOR = lipgloss.Color("#68C5DB")
     BOLD_BORDER_COLOR = lipgloss.Color("#F26419")
-    PENCIL_MARK_COLOR = lipgloss.Color("#F58347")
+    //PENCIL_MARK_COLOR = lipgloss.Color("#F58347")
+    PENCIL_MARK_COLOR = lipgloss.Color("#F77F00")
     FINAL_VALUE_COLOR = lipgloss.Color("#ffffff")
 )
 
@@ -71,28 +68,16 @@ var (
 
     // renders cell
     drawCell = func(cellWrong, isSelected, isCurrCell, given bool, cell string, pencils map[int8]bool) string {
-        if given { // given cells
-            if isCurrCell { // cell is current cell
-                return drawFullCell(GIVEN_CURRENT_CELL_COLOR, cell, pencils)
-            } else if isSelected { // cell is a selected cell and not the current cell
-                return drawFullCell(GIVEN_SELECTED_COLOR, cell, pencils)
-            } else { // cell is a base cell 
+        if isCurrCell { // cursor cell
+            return drawFullCell(CURRENT_COLOR, cell, pencils)
+        } else if isSelected { // highlighted cell that is not the cursor
+            return drawFullCell(SELECTED_COLOR, cell, pencils)
+        } else { // base color cells
+            if given { // given cell
                 return drawFullCell(GIVEN_BASE_COLOR, cell, pencils)
-            }
-        } else if cellWrong { // error cells
-            if isCurrCell { // cell is current cell
-                return drawFullCell(WRONG_CURRENT_CELL_COLOR, cell, pencils)
-            } else if isSelected { // cell is a selected cell and not the current cell
-                return drawFullCell(WRONG_SELECTED_COLOR, cell, pencils)
-            } else { // cell is a base cell 
+            } else if cellWrong { // wrong cell
                 return drawFullCell(WRONG_BASE_COLOR, cell, pencils)
-            }
-        } else { // modifiable cells
-            if isCurrCell { // cell is current cell
-                return drawFullCell(NOT_GIVEN_CURRENT_CELL_COLOR, cell, pencils)
-            } else if isSelected { // cell is a selected cell and not the current cell
-                return drawFullCell(NOT_GIVEN_SELECTED_COLOR, cell, pencils)
-            } else { // cell is a base cell 
+            } else { // modifiable cell
                 return drawFullCell(NOT_GIVEN_BASE_COLOR, cell, pencils)
             }
         }
