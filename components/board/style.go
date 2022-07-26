@@ -22,23 +22,11 @@ const (
     FINAL_VALUE_COLOR = lipgloss.Color("#ffffff")
 )
 
-// style definitions and ui rendering
 var (
    
     /* 
-        draws full cell, which is a 3x3 grid of 1 character cells.
-        this allows us to put pencil markings in each cell of the grid.
-        there are three different cell types, a highlighted cell, a normal cell,
-        and an error cell. Each type has two states:
-        
-        error cell: highlighted, non-highlighted
-        normal cell: given, modifiable
-        highlighted cell: given, modifiable
-
-        Each of these states has a different color, this is a generic function
-        that takes the primaryColor boolean, which determines which state the
-        given cell is, and the primary color and secondary color associated
-        with those given states.
+        draws a full cell, which is a 3x3 grid of 1 character cells with 1 cell padding on left and right.
+        this allows us to put pencil markings in each cell of the 3x3 grid.
     */
     drawFullCell = func(cellColor lipgloss.Color, cell string, pencils map[int8]bool) string {
         cellString := ""
