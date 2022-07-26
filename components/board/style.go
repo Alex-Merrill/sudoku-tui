@@ -14,7 +14,6 @@ const (
     SELECTED_COLOR = lipgloss.Color("#3AB4CF")
     CURRENT_COLOR = lipgloss.Color("#68C5DB")
     BOLD_BORDER_COLOR = lipgloss.Color("#F26419")
-    //PENCIL_MARK_COLOR = lipgloss.Color("#F58347")
     PENCIL_MARK_COLOR = lipgloss.Color("#F77F00")
     FINAL_VALUE_COLOR = lipgloss.Color("#ffffff")
 )

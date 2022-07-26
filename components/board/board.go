@@ -125,16 +125,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case key.Matches(msg, inputs.Controls.Right):
             m.cursorRight()
 
-        case key.Matches(msg, inputs.Controls.CtrlDown):
+        case key.Matches(msg, inputs.Controls.ShiftDown):
             m.cursorHighlightDown()
 
-        case key.Matches(msg, inputs.Controls.CtrlUp):
+        case key.Matches(msg, inputs.Controls.ShiftUp):
             m.cursorHighlightUp()
 
-        case key.Matches(msg, inputs.Controls.CtrlLeft):
+        case key.Matches(msg, inputs.Controls.ShiftLeft):
             m.cursorHighlightLeft()
 
-        case key.Matches(msg, inputs.Controls.CtrlRight):
+        case key.Matches(msg, inputs.Controls.ShiftRight):
             m.cursorHighlightRight()
 
         case key.Matches(msg, inputs.Controls.Number):
@@ -240,10 +240,14 @@ func (m *Model) deleteCell() {
         row := k.row
         col := k.col
         given := m.board[row][col].given
-        if !given && m.board[row][col].game != -1 {
+        if !given && m.board[row][col].game != -1 { // delete cell value
             m.board[row][col].game = -1
             delete(m.wrongCells, coordinate{row, col})
             m.cellsLeft++
+        } else if !given { // delete pencil marks if no cell value
+            for i := 1; i < 10; i++ {
+                m.board[row][col].pencils[int8(i)] = false
+            }
         }
     }
 }

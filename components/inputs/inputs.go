@@ -7,10 +7,10 @@ type KeyMap struct {
     Down key.Binding
     Left key.Binding
     Right key.Binding
-    CtrlUp key.Binding
-    CtrlDown key.Binding
-    CtrlLeft key.Binding
-    CtrlRight key.Binding
+    ShiftUp key.Binding
+    ShiftDown key.Binding
+    ShiftLeft key.Binding
+    ShiftRight key.Binding
     Number key.Binding
     PencilNumber key.Binding
     Delete key.Binding
@@ -25,7 +25,7 @@ func (k KeyMap) ShortHelp() []key.Binding {
 
 func (k KeyMap) FullHelp() [][]key.Binding {
     return [][]key.Binding{
-        {k.Up, k.Down, k.Left, k.Right, k.CtrlUp, k.CtrlDown, k.CtrlLeft, k.CtrlRight}, // first column
+        {k.Up, k.Down, k.Left, k.Right, k.ShiftUp, k.ShiftDown, k.ShiftLeft, k.ShiftRight}, // first column
         {k.Number, k.PencilNumber, k.Delete}, // third column
         {k.Help, k.Quit, k.NewGame}, // fifth column
     }
@@ -48,21 +48,21 @@ var Controls = KeyMap{
         key.WithKeys("l", "right"),
         key.WithHelp("→/l", "move right"),
     ),
-    CtrlUp: key.NewBinding(
-        key.WithKeys("ctrl+k", "ctrl+up"),
-        key.WithHelp("ctrl+↑/ctrl+k", "highlight up"),
+    ShiftUp: key.NewBinding(
+        key.WithKeys("K", "shift+up"),
+        key.WithHelp("shift+↑/shift+k", "highlight up"),
     ),
-    CtrlDown: key.NewBinding(
-        key.WithKeys("ctrl+j", "ctrl+down"),
-        key.WithHelp("ctrl+↓/ctrl+j", "highlight down"),
+    ShiftDown: key.NewBinding(
+        key.WithKeys("J", "shift+down"),
+        key.WithHelp("shift+↓/shift+j", "highlight down"),
     ),
-    CtrlLeft: key.NewBinding(
-        key.WithKeys("ctrl+h", "ctrl+left"),
-        key.WithHelp("ctrl+←/ctrl+h", "highlight left"),
+    ShiftLeft: key.NewBinding(
+        key.WithKeys("H", "shift+left"),
+        key.WithHelp("shift+←/shift+h", "highlight left"),
     ),
-    CtrlRight: key.NewBinding(
-        key.WithKeys("ctrl+l", "ctrl+right"),
-        key.WithHelp("ctrl+→/ctrl+l", "highlight right"),
+    ShiftRight: key.NewBinding(
+        key.WithKeys("L", "shift+right"),
+        key.WithHelp("shift+→/shift+l", "highlight right"),
     ),
     Number: key.NewBinding(
         key.WithKeys("1", "2", "3", "4", "5", "6", "7", "8", "9"),
