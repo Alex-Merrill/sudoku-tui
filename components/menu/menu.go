@@ -9,14 +9,12 @@ import (
 )
 
 type Model struct {
-    rules string
     help help.Model
     keys inputs.KeyMap
 }
 
 func NewModel() Model {
     return Model {
-        rules: "Normal sudoku rules apply. Each number 1-9 must be placed exactly once in each row, column, and box.",
         help: help.New(),
         keys: inputs.Controls,
     }
