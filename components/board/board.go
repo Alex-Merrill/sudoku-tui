@@ -13,8 +13,8 @@ import (
 	generator "github.com/forfuns/sudoku-go/generator"
 )
 
-// we make curBoardState a pointer to the current BoardState,
-// this allows us to modify currBordState instead of m.boardStates[currBoardStateIdx]
+// we make currBoardState a pointer to the current BoardState,
+// this allows us to modify currBoardState instead of m.boardStates[m.currBoardStateIdx]
 // makes our code a little cleaner
 type Model struct {
     boardStates []BoardState
@@ -25,8 +25,7 @@ type Model struct {
     selectedCells map[coordinate]bool // keeps track of all selected cells
 }
 
-// using int8 for our board as we don't need more space
-// also our sudoku library gives us an array with int8's so less work xD
+// using int8 for our board as our sudoku library gives us an array with int8's so less work xD
 type BoardState struct {
     board [9][9]struct { // contains current game, answer key, and given cells
         game      int8
@@ -43,11 +42,13 @@ type coordinate struct {
     row, col int
 }
 
-// BoardState method that will copy a board for the next board state
-// we need to initialize new maps for b.board.pencils and b.wrongCells
-// and copy the old maps to the new ones - we do this as to maintain different
-// wrongCells and different pencils states in each BoardState
-func (b BoardState) getNewBoard() BoardState {
+/*
+    BoardState method that will copy a board for the next board state
+    we need to initialize new maps for b.board.pencils and b.wrongCells
+    and copy the old maps to the new ones - we do this as to maintain different
+    wrongCells and different pencils states in each BoardState
+*/
+func (b BoardState) copyBoard() BoardState {
     // make new map for wrongCells
     newWrongCells := make(map[coordinate]bool)
     for k,v := range b.wrongCells {
@@ -87,11 +88,13 @@ var pencilMap = map[string]int8{
 
 // Initializes board model
 func NewModel(mode int) Model {
-    // Generates sudoku board
-    // Generate takes int 0-3 for easy, medium, hard, expert
-    // medium is broken in the package I am using, and I can't
-    // find a suitable library to replace it, so we are using
-    // 0,2,3 for easy, medium, hard - this is defined in main.go
+    /*
+        Generates sudoku board
+        Generate takes int 0-3 for easy, medium, hard, expert
+        medium is broken in the package I am using, and I can't
+        find a suitable library to replace it, so we are using
+        0,2,3 for easy, medium, hard - this is defined in main.go
+    */
     sudoku,err := generator.Generate(mode)
     game, answerKey := sudoku.Puzzle(), sudoku.Answer()
    
@@ -411,10 +414,12 @@ func (m *Model) updatePencilCells(num int8, currCell coordinate) {
     }
 }
 
-// takes a number 1-9 and a coordinate
-// if there is a pencil mark of number "num" at coordiante currCell
-// and the cell is not given and a value is not set, removes pencil mark
-// this is a helper function for updatePencilCells
+/*
+    takes a number 1-9 and a coordinate
+    if there is a pencil mark of number "num" at coordiante currCell
+    and the cell is not given and a value is not set, removes pencil mark
+    this is a helper function for updatePencilCells
+*/
 func (m *Model) removePencilCell(num int8, currCell coordinate) {
     row := currCell.row
     col := currCell.col
@@ -453,7 +458,7 @@ func (m *Model) RedoBoardAction() {
     we can append a new board state and point our current state to it
 */
 func (m *Model) makeNewBoardState() {
-    newBoardState := m.currBoardState.getNewBoard()
+    newBoardState := m.currBoardState.copyBoard()
     if m.currBoardState != &m.boardStates[len(m.boardStates)-1] {
         currIdx := m.currBoardStateIdx
         m.boardStates = m.boardStates[:currIdx + 1]
@@ -463,10 +468,13 @@ func (m *Model) makeNewBoardState() {
     m.currBoardState = &m.boardStates[m.currBoardStateIdx]
 }
 
-// need to get wrong cells and check for win seperately
-// sudoku generator can output puzzles with multiple solutions
-// its common for there to be x-wings at the end of the puzzle
-// where some/all configurations work.
+/*
+    need to get wrong cells and check for win seperately
+    sudoku generator can output puzzles with multiple solutions
+    its common for there to be x-wings at the end of the puzzle
+    where some/all configurations work. Thus, our answer key might be different
+    than the board while the board is still a valid solution
+*/
 func (m *Model) checkWon() bool {
     // get wrong cells
     cellsWrong := 0        
@@ -486,12 +494,14 @@ func (m *Model) checkWon() bool {
     return won
 }
 
-// We can be a bit clever here and use row,col,box 2D arrays
-// with type bool 
-// We can then check for correctness with one pass through the
-// board, as opposed to 3 (for every row, col, and box)
-// ex: if a 1 is placed at row 2 col 2, we will set
-// row[2][1] = true, col[2][1] = true, box[0][1] = true
+/*
+    We can be a bit clever here and use row,col,box 2D arrays
+    with type bool 
+    We can then check for correctness with one pass through the
+    board, as opposed to 3 (for every row, col, and box)
+    ex: if a 1 is placed at row 2 col 2, we will set
+    row[2][1] = true, col[2][1] = true, box[0][1] = true
+*/
 func (m *Model) checkForWinManual() bool {
     // [9][10] because there are 9 cells in each row/col/box
     // but we have numbers 1-9, so [c][0] will never be used
