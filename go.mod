@@ -5,11 +5,7 @@ go 1.18
 require (
 	github.com/charmbracelet/bubbles v0.13.0
 	github.com/charmbracelet/bubbletea v0.22.0
-)
-
-require (
-	github.com/charmbracelet/harmonica v0.2.0 // indirect
-	github.com/hisamafahri/coco v1.0.0 // indirect
+	github.com/hisamafahri/coco v1.0.0
 )
 
 require (
