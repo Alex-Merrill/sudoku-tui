@@ -1,9 +1,11 @@
 package winscreen
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
-	"regexp"
+	"os"
+	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,9 +15,13 @@ import (
 
 type Model struct {
     animationState string
-    animationOver bool  
-    animationStarted bool
-    messageCharIdx int
+    sourceText []string
+    color lipgloss.Color
+
+    textColStartIdx int
+    textColEndIdx int
+
+    width, height int
 }
 
 type StopAnim struct {}
@@ -27,17 +33,19 @@ type frameMsg struct {
 const (
     fps = 60
     animationLength = 5*time.Second
-    messageToDisplay = "You Won!"
-    lineLength = 5
+    bannerSpeed = 1 //how many cols move per frame
+    filePath = "wedge.txt"
 )
 
-func NewModel() Model {
+func NewModel(w, h int) Model {
     return Model{
-        animationState: "You Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!",
-        //animationState: "",
-        animationOver: false,
-        animationStarted: false,
-        messageCharIdx: 0,
+        animationState: "",
+        sourceText: getTextToDisplay(w),
+        color: getRandomColor(),
+        textColStartIdx: 0,
+        textColEndIdx: 2,
+        width: w,
+        height: h,
     }
 }
 
@@ -60,39 +68,13 @@ func (m Model) Init() tea.Cmd {
     return tea.Sequentially(wait(time.Second/8), animate())
 }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
     switch msg.(type) {
-    /*  if we do something more dynamic or takes places over certain time,
-        we might want user to be able to stop animation
-        case tea.KeyMsg:
-            if m.animationStarted {
-                m.animationOver = true
-                return m, stopAnim()
-            } else {
-                return m, nil
-            }
-    */
-
     // new frame
     case frameMsg:
-        // change animation started state and set animation start time
-        if !m.animationStarted {
-            m.animationStarted = true
-        }
-        // if animation should be over, don't request another frame
-        if m.animationOver {
-            return m, nil
-        }
-
-        /*  building animation string by frame
-            if len(m.animationState) == 225 {
-                m.animationOver = true
-                return m, stopAnim()
-            }
-       
-            // updates animation state
-            m.updateAnimationState()
-        */
+        
+        // update animationState
+        m.updateAnim()
 
         // request next frame
         return m, animate()
@@ -103,16 +85,37 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string { 
-    stringToDisplay := ""
+    return lipgloss.Place(m.width, m.height, lipgloss.Right, lipgloss.Center, m.animationState)
 
-    charStyle := lipgloss.NewStyle()
+}
 
-    for _,c := range m.animationState {
-        randCol := getRandomColor()
-        stringToDisplay += charStyle.Foreground(randCol).Render(string(c))
+// slides banner over by bannerSpeed columns
+func (m *Model) updateAnim() {
+    m.animationState = "" 
+    
+    for i := 0; i < len(m.sourceText); i++ {
+        for j := m.textColStartIdx; j < m.textColEndIdx; j++ {
+            line := string([]rune(m.sourceText[i])[j])
+            m.animationState += lipgloss.NewStyle().Foreground(m.color).Render(line)
+        }
+        m.animationState += "\n"
+    }
+    
+    // iterate columns to draw
+    m.textColEndIdx += bannerSpeed
+    
+    // if we are taking up the full width of the window, also iterate the start column
+    if m.textColEndIdx - m.textColStartIdx > m.width {
+        m.textColStartIdx += bannerSpeed
+    }
+    
+    // once banner has passed screen, start over
+    if m.textColEndIdx >= len([]rune(m.sourceText[0])) {
+        m.color = getRandomColor()
+        m.textColStartIdx = 0
+        m.textColEndIdx = 2
     }
 
-    return stringToDisplay
 }
 
 func getRandomColor() lipgloss.Color {
@@ -132,29 +135,29 @@ func getRandomColor() lipgloss.Color {
     return lipgloss.Color(hex)
 }
 
-func (m *Model) updateAnimationState() {
-    r := regexp.MustCompile("\n")
-    animationStateNoNL := r.ReplaceAllString(m.animationState, "")
+// read win text from file
+func getTextToDisplay(w int) []string {
+    lines := []string{}
 
-    lineCharCount := (len(messageToDisplay)*lineLength + lineLength-1)
+    file,err := os.Open(filePath)
+    check(err)
 
-    // add character
-    if m.messageCharIdx < len(messageToDisplay) {
-        charToAdd := string([]rune(messageToDisplay)[m.messageCharIdx])
-        m.animationState += charToAdd
-        m.messageCharIdx++
-    } else if len(animationStateNoNL) % lineCharCount == 0 { // add new line after lineLength messages 
-        m.animationState += "\n"
-        m.messageCharIdx = 0
-    } else { // add space between message
-        m.animationState += " "
-        m.messageCharIdx = 0
-    } 
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        lines = append(lines, scanner.Text() + strings.Repeat(" ", w))
+    }
+    
+    err = scanner.Err()
+    check(err)
+
+    return lines
 }
 
-func stopAnim() tea.Cmd {
-    return func() tea.Msg {
-        return StopAnim{}
+// throw error
+func check(e error) {
+    if e != nil {
+        panic(e)
     }
 }
-
