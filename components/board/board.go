@@ -222,8 +222,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-    
-
     // converts board.game cell to string for draw
     var convertToString = func(num int8) string {
         if num == -1 {
@@ -236,8 +234,8 @@ func (m Model) View() string {
     var err string
     if len(m.currBoardState.wrongCells) > 1 {
         err = "You need to fix " + strconv.Itoa(m.currBoardState.cellsLeft) + " cells!"
-    } else if len(m.currBoardState.wrongCells) > 0{
-        err = "You need to fix " + strconv.Itoa(m.currBoardState.cellsLeft) + " cells!"
+    } else if len(m.currBoardState.wrongCells) > 0 {
+        err = "You need to fix " + strconv.Itoa(m.currBoardState.cellsLeft) + " cell!"
     } else {
         err = ""
     }
