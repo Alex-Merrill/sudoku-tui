@@ -3,6 +3,7 @@ package winscreen
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"regexp"
 	"time"
 
@@ -33,8 +34,8 @@ const (
 
 func NewModel() Model {
     return Model{
-        animationState: "You Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!",
-        //animationState: "",
+        //animationState: "You Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!\nYou Won! You Won! You Won! You Won! You Won!",
+        animationState: getTextToDisplay(),
         animationOver: false,
         animationStarted: false,
         messageCharIdx: 0,
@@ -108,8 +109,12 @@ func (m Model) View() string {
     charStyle := lipgloss.NewStyle()
 
     for _,c := range m.animationState {
-        randCol := getRandomColor()
-        stringToDisplay += charStyle.Foreground(randCol).Render(string(c))
+        if string(c) == " " {
+            randCol := getRandomColor()
+            stringToDisplay += charStyle.Background(randCol).Render(string(c))
+        } else {
+            stringToDisplay += string(c)
+        }
     }
 
     return stringToDisplay
@@ -131,6 +136,27 @@ func getRandomColor() lipgloss.Color {
 
     return lipgloss.Color(hex)
 }
+
+
+func getTextToDisplay() string {
+    data,err := os.ReadFile("orderedwinscreen.txt")
+    check(err)
+
+     return string(data)
+}
+
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
+}
+
+
+
+
+
+
+
 
 func (m *Model) updateAnimationState() {
     r := regexp.MustCompile("\n")

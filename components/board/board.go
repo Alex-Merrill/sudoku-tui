@@ -210,8 +210,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         tea.Cmd which contains a tea.Msg of type GameWon
         This allows our Model in model.go to know when to start our winscreen
     */
-    if m.currBoardState.cellsLeft == 0 && !m.currBoardState.gameWon {
-        if m.checkWon() {
+    //if m.currBoardState.cellsLeft == 0 && !m.currBoardState.gameWon {
+    //    if m.checkWon() {
+    //        return m, func() tea.Msg {
+    //            return GameWon{}
+    //        }
+    //    }
+    //}
+
+    if m.currBoardState.cellsLeft == 38 {
+        if !m.currBoardState.gameWon {
+            m.currBoardState.gameWon = true
             return m, func() tea.Msg {
                 return GameWon{}
             }
