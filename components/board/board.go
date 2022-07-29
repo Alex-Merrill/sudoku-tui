@@ -34,13 +34,16 @@ type BoardState struct {
         pencils map[int8]bool
     }
     wrongCells map[coordinate]bool // cells which contain the wrong number, shown upon puzzle completion
-    gameWon bool // are ya winnin' son?
     cellsLeft int // keep track of this so we know when to display error highlighting
+    gameWon bool
 }
 
 type coordinate struct {
     row, col int
 }
+
+// this is a tea.Msg type which we use for starting winscreen in model.go
+type GameWon struct {}
 
 /*
     BoardState method that will copy a board for the next board state
@@ -83,8 +86,6 @@ var pencilMap = map[string]int8{
     "*": 8,
     "(": 9,
 }
-
-
 
 // Initializes board model
 func NewModel(mode int) Model {
@@ -137,8 +138,8 @@ func NewModel(mode int) Model {
     boardState := BoardState {
         board: board,
         wrongCells: make(map[coordinate]bool),
-        gameWon: false,
         cellsLeft: cellsLeft,
+        gameWon: false,
     }
 
     return Model{
@@ -203,10 +204,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         }
     }
 
-    // check if game is won when 0 zeros cell to fill
-    if m.currBoardState.cellsLeft == 0 {
+    /*
+        check if game is won when 0 zeros cell to fill and game is not already won
+        if the game is won, we return the model, and a
+        tea.Cmd which contains a tea.Msg of type GameWon
+        This allows our Model in model.go to know when to start our winscreen
+    */
+    if m.currBoardState.cellsLeft == 0 && !m.currBoardState.gameWon {
         if m.checkWon() {
-            m.currBoardState.gameWon = true
+            return m, func() tea.Msg {
+                return GameWon{}
+            }
         }
     }
 
@@ -215,9 +223,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
     
-    if m.currBoardState.gameWon {
-        return "You Won!"
-    }
 
     // converts board.game cell to string for draw
     var convertToString = func(num int8) string {
@@ -489,6 +494,9 @@ func (m *Model) checkWon() bool {
 
     // check for win
     won := m.checkForWinManual()
+    if won {
+        m.currBoardState.gameWon = true
+    }
 
     m.currBoardState.cellsLeft = cellsWrong
     return won
