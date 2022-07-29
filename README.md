@@ -39,6 +39,9 @@ You can press `?` in the game to see the help menu which gives a brief explanati
 4. Clearing cells
     - To clear a cell, you can use backspace. Pressing backspace on both a cell with a set value or pencil marks will clear the cell.
 
-5. General features
+5. Undo/Redo actions
+    - To undo or redo any action (setting a cell, pencil marking, deleting a cell) you can press ctrl+z and ctrl+r, respectively, to do so.
+
+6. General features
     - Pencil markings will automatically upate when setting a cell value that interacts with the pencil cells, i.e. the set value is in the same row/col/box as the pencil marking.
     - Please create an issue if there are any bugs or new features you'd like to see! I can't promise I'll implement them but I'd love to hear any ideas.
