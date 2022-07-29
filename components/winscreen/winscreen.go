@@ -16,9 +16,7 @@ import (
 type Model struct {
     animationState string
     sourceText []string
-
-    animationOver bool  
-    animationStarted bool
+    color lipgloss.Color
 
     textColStartIdx int
     textColEndIdx int
@@ -35,15 +33,15 @@ type frameMsg struct {
 const (
     fps = 60
     animationLength = 5*time.Second
-    bannerSpeed = 2 //how many cols move per frame
+    bannerSpeed = 1 //how many cols move per frame
+    filePath = "wedge.txt"
 )
 
 func NewModel(w, h int) Model {
     return Model{
         animationState: "",
         sourceText: getTextToDisplay(w),
-        animationOver: false,
-        animationStarted: false,
+        color: getRandomColor(),
         textColStartIdx: 0,
         textColEndIdx: 2,
         width: w,
@@ -72,28 +70,10 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
     switch msg.(type) {
-    /*  if we do something more dynamic or takes places over certain time,
-        we might want user to be able to stop animation
-        case tea.KeyMsg:
-            if m.animationStarted {
-                m.animationOver = true
-                return m, stopAnim()
-            } else {
-                return m, nil
-            }
-    */
-
     // new frame
     case frameMsg:
-        // change animation started state and set animation start time
-        if !m.animationStarted {
-            m.animationStarted = true
-        }
-        // if animation should be over, don't request another frame
-        if m.animationOver {
-            return m, nil
-        }
-
+        
+        // update animationState
         m.updateAnim()
 
         // request next frame
@@ -105,46 +85,33 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) View() string { 
-    //stringToDisplay := ""
-
-    //charStyle := lipgloss.NewStyle()
-
-    //for _,c := range m.animationState {
-    //    if string(c) == " " {
-    //        randCol := getRandomColor()
-    //        stringToDisplay += charStyle.Background(randCol).Render(string(c))
-    //    } else {
-    //        stringToDisplay += string(c)
-    //    }
-    //}
-
-    //for _,l := range m.animationState {
-    //    randCol := getRandomColor()
-    //    stringToDisplay += charStyle.Foreground(randCol).Render(string(l))
-    //}
-
-    //return stringToDisplay
     return lipgloss.Place(m.width, m.height, lipgloss.Right, lipgloss.Center, m.animationState)
+
 }
 
+// slides banner over by bannerSpeed columns
 func (m *Model) updateAnim() {
     m.animationState = "" 
     
     for i := 0; i < len(m.sourceText); i++ {
         for j := m.textColStartIdx; j < m.textColEndIdx; j++ {
-            m.animationState += string([]rune(m.sourceText[i])[j])
+            line := string([]rune(m.sourceText[i])[j])
+            m.animationState += lipgloss.NewStyle().Foreground(m.color).Render(line)
         }
         m.animationState += "\n"
     }
     
-    
+    // iterate columns to draw
     m.textColEndIdx += bannerSpeed
     
+    // if we are taking up the full width of the window, also iterate the start column
     if m.textColEndIdx - m.textColStartIdx > m.width {
         m.textColStartIdx += bannerSpeed
     }
     
+    // once banner has passed screen, start over
     if m.textColEndIdx >= len([]rune(m.sourceText[0])) {
+        m.color = getRandomColor()
         m.textColStartIdx = 0
         m.textColEndIdx = 2
     }
@@ -168,11 +135,11 @@ func getRandomColor() lipgloss.Color {
     return lipgloss.Color(hex)
 }
 
-
+// read win text from file
 func getTextToDisplay(w int) []string {
     lines := []string{}
 
-    file,err := os.Open("orderedwinscreen.txt")
+    file,err := os.Open(filePath)
     check(err)
 
     defer file.Close()
@@ -192,11 +159,5 @@ func getTextToDisplay(w int) []string {
 func check(e error) {
     if e != nil {
         panic(e)
-    }
-}
-
-func stopAnim() tea.Cmd {
-    return func() tea.Msg {
-        return StopAnim{}
     }
 }

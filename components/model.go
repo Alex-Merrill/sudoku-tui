@@ -55,10 +55,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         m.winscreen = winscreen.NewModel(m.width, m.height)
         initCmd = m.winscreen.Init()
 
-    /* if we allow user to stop animation, we can enable this
-        case winscreen.StopAnim:
-            m.winscreenDone = true
-    */
     }
 
     var boardCmd, winScreenCmd tea.Cmd
@@ -74,20 +70,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 
     if m.gameWon {
-        compositeView := m.winscreen.View() +
-                        "\n\n" +
-                        "Press 'n' to start a new game" +
-                        "\n" +
-                        "Press 'q' or 'ctrl+c' to quit"
+        compositeView := lipgloss.JoinVertical(lipgloss.Center,
+                                               m.winscreen.View(),
+                                               "Press 'n' to start a new game",
+                                               "Press 'q' or 'ctrl+c' to quit")
         return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, compositeView)
-
-        /* if we allow user to stop animation, we can use this instead
-            if m.winscreenDone {
-                return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, compositeView)
-            } else {
-                return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, m.winscreen.View())
-            }
-        */
     }
 
     compositeView := m.board.View() + "\n\n" + m.menu.View() 
