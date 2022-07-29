@@ -52,7 +52,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
     case board.GameWon:
         m.gameWon = true
-        m.winscreen = winscreen.NewModel()
+        m.winscreen = winscreen.NewModel(m.width, m.height)
         initCmd = m.winscreen.Init()
 
     /* if we allow user to stop animation, we can enable this
@@ -61,22 +61,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     */
     }
 
-    // update board, menu, and winscreen models
-    newBoardModel,boardCmd := m.board.Update(msg)
-    newMenuModel,_ := m.menu.Update(msg)
-    newWinScreenModel, winScreenCmd := m.winscreen.Update(msg)
+    var boardCmd, winScreenCmd tea.Cmd
 
-    m.board = newBoardModel.(board.Model)
-    m.menu = newMenuModel.(menu.Model)
-    m.winscreen = newWinScreenModel.(winscreen.Model)
+    // update board, menu, and winscreen models
+    m.board,boardCmd = m.board.Update(msg)
+    m.menu,_ = m.menu.Update(msg)
+    m.winscreen, winScreenCmd = m.winscreen.Update(msg)
 
     return m, tea.Batch(boardCmd, winScreenCmd, initCmd)
 }
 
 func (m Model) View() string {
-  
-    // make composite view of app
-    // board view on top, menu view on bottom
 
     if m.gameWon {
         compositeView := m.winscreen.View() +
@@ -105,7 +100,6 @@ func NewModel(mode int) Model {
         mode: mode,
         board: board.NewModel(mode),
         menu: menu.NewModel(),
-        winscreen: winscreen.NewModel(),
         gameWon: false,
         winscreenDone: false,
     }
