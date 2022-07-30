@@ -9,40 +9,38 @@ import (
 )
 
 type Model struct {
-    help help.Model
-    keys inputs.KeyMap
+	help help.Model
+	keys inputs.KeyMap
 }
 
 func NewModel() Model {
-    return Model {
-        help: help.New(),
-        keys: inputs.Controls,
-    }
+	return Model{
+		help: help.New(),
+		keys: inputs.Controls,
+	}
 }
 
 func (m Model) Init() tea.Cmd {
-    return nil
+	return nil
 }
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
-    switch msg := msg.(type) {
-    case tea.WindowSizeMsg:
-        m.help.Width = msg.Width
-    
-    case tea.KeyMsg:
-        switch {
-        case key.Matches(msg, inputs.Controls.Help):
-            m.help.ShowAll = !m.help.ShowAll
-        }
-    }
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.help.Width = msg.Width
 
-    return m, nil
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, inputs.Controls.Help):
+			m.help.ShowAll = !m.help.ShowAll
+		}
+	}
+
+	return m, nil
 }
 
 func (m Model) View() string {
-    
-    helpView := m.help.View(m.keys)
+	helpView := m.help.View(m.keys)
 
-    return helpView
+	return helpView
 }
-
