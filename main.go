@@ -45,6 +45,6 @@ func main() {
 }
 
 func printArgHelp() string {
-	return `go run main.go [mode]
-               [mode] - [easy, medium, hard]`
+	return `sudoku-tui <mode>
+               <mode> - easy, medium, hard`
 }
