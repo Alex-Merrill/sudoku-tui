@@ -1,10 +1,8 @@
 package winscreen
 
 import (
-	"bufio"
 	"fmt"
 	"math/rand"
-	"os"
 	"strings"
 	"time"
 
@@ -34,7 +32,6 @@ const (
 	fps             = 60
 	animationLength = 5 * time.Second
 	bannerSpeed     = 1 // how many cols move per frame
-	filePath        = "wedge.txt"
 )
 
 func NewModel(w, h int) Model {
@@ -133,22 +130,28 @@ func getRandomColor() lipgloss.Color {
 	return lipgloss.Color(hex)
 }
 
-// read win text from file
 func getTextToDisplay(w int) []string {
 	lines := []string{}
 
-	file, err := os.Open(filePath)
-	check(err)
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text()+strings.Repeat(" ", w))
-	}
-
-	err = scanner.Err()
-	check(err)
+	lines = append(lines, "YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!Y"+strings.Repeat(" ", w))
+	lines = append(lines, "ouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!Yo"+strings.Repeat(" ", w))
+	lines = append(lines, "uWon!         YouWo n        !YouWon                      !YouWon!YouWon         !YouWo        n!YouWon!You         Won!Yo        uWon!Y         ouWon!YouW                     on!YouWon!You          Won!Y         ouWon!YouWon!YouWon!YouWon!YouWon!YouWon"+strings.Repeat(" ", w))
+	lines = append(lines, "!Yo             uW            on!Yo                         uWon!YouWon                          !YouWon!Y            ouW           on!            YouWon!                        YouWon!You                          Won!YouWon           !YouWon!YouWon!You"+strings.Repeat(" ", w))
+	lines = append(lines, "Won    !YouWon!    YouWon!    YouWo  n!YouWon!YouWon!YouWo   n!YouWon!Y   ouWon!Yo      uWon!Yo   uWon!You    Won!You   W  on!YouWo       n!YouWon  !YouWo  n!YouWon!YouWon!YouW   on!YouWon    !YouWon!      YouWon!   YouWon!Y    ouWon!   YouWon!YouWon!Yo"+strings.Repeat(" ", w))
+	lines = append(lines, "uWo     n!YouWon   !YouWon     !You    Won!YouWon   !YouWon    !YouWon!     YouWon!      YouWon!Y  ouWon!Y     ouWon!Yo     uWon!YouW      on!YouWo  n!You    Won!YouWo    n!YouWo   n!YouWo     n!YouWon!Y    ouWon!Y   ouWon!Y     ouWon!Y  ouWon!YouWon!Yo"+strings.Repeat(" ", w))
+	lines = append(lines, "uWo       n!YouWon !YouWon     !You     Won!YouW      on!YouW   on!YouW      on!YouWo      n!YouWo   n!You       Won!YouW   on!YouWon!Yo    uWon!You  Won!     YouWon!Yo     uWon!Yo  uWon!Y       ouWon!YouWo  n!YouWon   !YouW      on!YouW  on!YouWon!YouW"+strings.Repeat(" ", w))
+	lines = append(lines, "on!         YouWon!YouWon!     YouW      on!YouWon     !YouWon    !YouW       on!YouWo      n!YouWo   n!Yo         uWon!Yo  uWon!YouWon!Yo  uWon!YouW  on!      YouWon!Yo     uWon!Yo   uWon!       YouWon!YouWon!YouWon!Y  ouWon       !YouWo   n!YouWon!You"+strings.Repeat(" ", w))
+	lines = append(lines, "Won             !YouWon!You     Won        !YouWon!      YouWon!   YouW        on!YouWo      n!YouWon  !Yo          uWon!YouWon!YouWo n!YouWon!YouWon!  Yo        uWon!You      Won!You  Won!        YouWon!YouWon!YouWon!Y   ouWo       n!YouWo  n!YouWon!Yo"+strings.Repeat(" ", w))
+	lines = append(lines, "uWo                 n!YouWo     n!Y         ouWon!Yo      uWon!Yo    uWo         n!YouWon     !YouWon!   Yo           uWon!YouWon!You   Won!YouWon!YouW  on        !YouWon!      YouWon!   You         Won!YouWon!YouWon!YouW  on!Y       ouWon!Y  ouWon!YouW"+strings.Repeat(" ", w))
+	lines = append(lines, "on!Y                  ouWon!     You          Won!YouW     on!YouWo   n!Y         ouWon!Yo      uWon!You  Wo            n!YouWon!YouW      on!YouWon!You  Wo        n!YouWon!     YouWon!Y  ouW         on!YouWon  !YouWon!You   Won                !YouWon!Y"+strings.Repeat(" ", w))
+	lines = append(lines, "ouWon!Y                ouWon!     YouW         on!YouWo      n!YouWo   n!Y         ouWon!Yo      uWon!You  Won            !YouWon!You        Won!YouWon!Y  ou         Won!YouW     on!YouWo   n!Y         ouWon!Y    ouWon!YouWo  n!Yo                uWon!Yo"+strings.Repeat(" ", w))
+	lines = append(lines, "uWon!YouWon             !YouWo      n!Yo        uWon!YouW    on!YouWon   !Yo         uWon!You    Won!YouWo   n!Yo          uWon!YouWo          n!YouWon!Yo  uWo        n!YouWon!    YouWon!Yo  uWon        !YouWon!    YouWon!You   Won      !YouWon!  YouWon"+strings.Repeat(" ", w))
+	lines = append(lines, "!YouWon!YouWon!           YouWon     !YouWo       n!YouWon!YouWon!YouWo    n!Y        ouWon!YouWon!YouWon!Yo  uWon!Y         ouWon!Yo             uWon!YouW  on!Y        ouWon!YouWon!YouWon!Y  ouWon       !YouWon!      YouWon!Yo  uWon     !YouWon!  YouWo"+strings.Repeat(" ", w))
+	lines = append(lines, "n!YouWon!YouWon!You        Won!Yo      uWon!Y      ouWon!YouWon!YouWon!Yo   uWon!      YouWon!YouWon!YouWon!Y  ouWon!Yo        uWon!     Y          ouWon!Yo  uWon!Y      ouWon!YouWon!YouWon!Y  ouWon!       YouWon!       YouWon!Y   ouWo    n!YouWon  !You"+strings.Repeat(" ", w))
+	lines = append(lines, "Won!YouWon!YouWon!YouWo                n!YouWon                             !YouWon                            !YouWon!You               Won!Y                 ouWon!Y                           ouWon!You                             Won!Yo            uWon"+strings.Repeat(" ", w))
+	lines = append(lines, "!YouWon!YouWon!YouWon!YouW             on!YouWon!Y                         ouWon!YouWo                        n!YouWon!YouWon            !YouWon!Y             ouWon!YouW                        on!YouWon!Y             ou            Won!You          Won!Y"+strings.Repeat(" ", w))
+	lines = append(lines, "ouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!Yo"+strings.Repeat(" ", w))
+	lines = append(lines, "uWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!YouWon!You"+strings.Repeat(" ", w))
 
 	return lines
 }
