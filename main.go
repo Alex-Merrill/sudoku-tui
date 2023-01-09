@@ -11,10 +11,12 @@ import (
 
 // sudoku generator library is broken for true medium difficulty
 // instead using hard as medium and expert as hard
+// = that is fixup =
 const (
 	LEVEL_EASY   = 0
-	LEVEL_MEDIUM = 2
-	LEVEL_HARD   = 3
+	LEVEL_MEDIUM = 1
+	LEVEL_HARD   = 2
+	LEVEL_EXPERT = 3
 )
 
 func main() {
@@ -23,6 +25,7 @@ func main() {
 		"easy":   LEVEL_EASY,
 		"medium": LEVEL_MEDIUM,
 		"hard":   LEVEL_HARD,
+		"expert": LEVEL_EXPERT,
 	}
 
 	// incorrect amount of args
@@ -46,5 +49,5 @@ func main() {
 
 func printArgHelp() string {
 	return `sudoku-tui <mode>
-               <mode> - easy, medium, hard`
+               <mode> - easy, medium, hard, expert`
 }

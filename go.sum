@@ -9,6 +9,10 @@ github.com/charmbracelet/lipgloss v0.5.0 h1:lulQHuVeodSgDez+3rGiuxlPVXSnhth442DA
 github.com/charmbracelet/lipgloss v0.5.0/go.mod h1:EZLha/HbzEt7cYqdFPovlqy5FZPj0xFhg5SaqxScmgs=
 github.com/containerd/console v1.0.3 h1:lIr7SlA5PxZyMV30bDW0MGbiOPXwc63yRuCP0ARubLw=
 github.com/containerd/console v1.0.3/go.mod h1:7LqA/THxQ86k76b8c/EMSiaJ3h1eZkMkXar0TQ1gf3U=
+github.com/einsitang/sudoku-go v0.0.0-20230109155545-4fa32c69b7eb h1:ng2b06YtImHgnXDXoVvhW89hXu0B67pGGfvGKA8eL8A=
+github.com/einsitang/sudoku-go v0.0.0-20230109155545-4fa32c69b7eb/go.mod h1:OseKjIrPUM4rQYqzISUWzyjDJ90DPyfdCcbCGTd/BRc=
+github.com/einsitang/sudoku-go v1.0.3 h1:Wi2xJZHCSjhxU/YrAi8gRocmFoWa7QoP8EcRBTRkMeQ=
+github.com/einsitang/sudoku-go v1.0.3/go.mod h1:OseKjIrPUM4rQYqzISUWzyjDJ90DPyfdCcbCGTd/BRc=
 github.com/forfuns/sudoku-go v0.0.0-20220126091642-55eca2ac8dab h1:CrPsGMJUUyiQoVUqrARjwGeN+5bsKEcPliO3/H7tFMk=
 github.com/forfuns/sudoku-go v0.0.0-20220126091642-55eca2ac8dab/go.mod h1:b/GpzuvP/0YPUWc0+ctCUrhZL2PX8RWlBfbTn8CRLEI=
 github.com/hisamafahri/coco v1.0.0 h1:rZ+AcdOs6V2W1k7wMI5QwlCix8YsM9QCfQ5YxZpJ6qo=
