@@ -8,10 +8,11 @@ require (
 	github.com/hisamafahri/coco v1.0.0
 )
 
+require github.com/einsitang/sudoku-go v1.0.3
+
 require (
 	github.com/charmbracelet/lipgloss v0.5.0
 	github.com/containerd/console v1.0.3 // indirect
-	github.com/forfuns/sudoku-go v0.0.0-20220126091642-55eca2ac8dab
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect

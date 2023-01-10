@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	generator "github.com/forfuns/sudoku-go/generator"
+	generator "github.com/einsitang/sudoku-go/generator"
 )
 
 // we make currBoardState a pointer to the current BoardState,
